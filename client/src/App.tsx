@@ -12,6 +12,7 @@ import History from './pages/History'
 import Profile from './pages/Profile'
 import { Provider } from 'react-redux'
 import store from './redux'
+import ProfilePage from './pages/Profile'
 
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
        <Route path='/' element={<Home />} />
        <Route path='/dashboard' element={<Dashboard />} />
        <Route path='/history' element={<History />} />
-       <Route path='/profile' element={<Profile />} />
+       <Route path='/profile' element={<ProfilePage />} />
        
       </Route>
     </Routes>

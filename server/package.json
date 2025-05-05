@@ -4,12 +4,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "next build",
-    "start": "nodemon index.js",
-    "dev": "nodemon index.js",
-    "seed": "node prisma/seed.js"
-  },
+  "postinstall": "prisma generate",
+  "start": "nodemon index.js",
+  "dev": "nodemon index.js",
+  "build": "next build",
+  "seed": "node prisma/seed.js"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",

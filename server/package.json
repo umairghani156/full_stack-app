@@ -8,7 +8,7 @@
     "build": "prisma generate && next build",
     "start": "nodemon index.js",
     "dev": "nodemon index.js",
-    "seed": "node prisma/seed.cjs"
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",

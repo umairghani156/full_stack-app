@@ -16,7 +16,7 @@ export const getNotes = createAsyncThunk(
 
 export const createNote = createAsyncThunk(
     'notes/create',
-    async (note: string, { rejectWithValue }) => {
+    async (note : { title: string, description: string, password?: string }, { rejectWithValue }) => {
         try {
             const response = await createNoteAPI(note);
             return response;
@@ -40,9 +40,9 @@ export const deleteNote = createAsyncThunk(
 
 export const updateNote = createAsyncThunk(
     'notes/update',
-    async ({ id, note }: { id: string;note:{ title: string, description: string, password?: string }}, { rejectWithValue }) => {
+    async (note : { id: string, title: string, description: string, password?: string }, { rejectWithValue }) => {
         try {
-            const response = await updateNoteAPI(id, note);
+            const response = await updateNoteAPI(note);
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to update note');

@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginUser, registerUser } from '../thunks/auth.thunk';
+import { getProfile, loginUser, registerUser, updateProfile } from '../thunks/auth.thunk';
 
 interface User {
   id: string;
@@ -10,6 +10,7 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  profile: string | null;
   token: string | null;
   loading: boolean;
   error: string | null;
@@ -17,6 +18,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
+  profile: null,
   token: localStorage.getItem('token'),
   loading: false,
   error: null,
@@ -66,7 +68,16 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(getProfile.fulfilled, (state, action: PayloadAction<string>) => {
+       
+        state.profile = action.payload;
+      })
+
+      // Update Profile 
+      .addCase(updateProfile.fulfilled, (state, action: PayloadAction<User>) => {
+        state.profile = action.payload;
+      })
   },
 });
 

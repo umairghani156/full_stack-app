@@ -54,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ capitalizedText, onMenuClick }) => {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+            className="flex items-center p-2 cursor-pointer rounded-lg hover:bg-gray-100 text-gray-600"
           >
             <FaUserCircle className="text-xl" />
           </button>
@@ -62,19 +62,14 @@ const Navbar: React.FC<NavbarProps> = ({ capitalizedText, onMenuClick }) => {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-1 bg-white border border-gray-200 z-[100]">
               <Link
-                to={`/${pathname?.toLowerCase()}-panel/profile`}
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                to={`/profile`}
+                className="flex items-center  px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <FaUserCircle className="mr-2" />
                 Profile
               </Link>
-              <Link
-                to="/admin-panel/settings"
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <FaCog className="mr-2" />
-                Settings
-              </Link>
+            
+            
               <button
                 onClick={logOutHandler}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

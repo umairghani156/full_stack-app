@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,66 +11,85 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { getProfile, updateProfile } from '@/redux/thunks/auth.thunk';
+import { useAppDispatch, useAppSelector } from '@/hooks';
 
-// Zod Schema for validation
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Please enter a valid email"),
-  oldPassword: z.string().min(8, "Password must be at least 8 characters"),
-  newPassword: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .refine((val, ctx) => {
-      if (val !== ctx.parent.oldPassword) {
-        return false;
-      }
-      return true;
-    }, "New password must not be the same as the old password"),
+  oldPassword: z.string().optional(),
+  newPassword: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.oldPassword && data.newPassword && data.oldPassword === data.newPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "New password must not be the same as the old password",
+      path: ["newPassword"],
+    });
+  }
 });
+
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 const ProfilePage = () => {
-  // Default profile data (you can replace this with data from API)
-  const [profileData, setProfileData] = useState<ProfileFormData>({
-    name: 'Pedro Duarte',  // Example data
-    email: 'pedro@example.com',  // Example data
-    oldPassword: '',
-    newPassword: ''
-  });
+  const dispatch = useAppDispatch();
+  const { profile } = useAppSelector((state) => state.auth);
 
-  // Use React Hook Form for profile form handling
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ProfileFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: profileData,  // Set initial form values
+    defaultValues: {
+      name: '',
+      email: '',
+      oldPassword: '',
+      newPassword: '',
+    },
   });
 
-  // Handle form submission
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (profile?.user) {
+      reset({
+        name: profile.user.name || '',
+        email: profile.user.email || '',
+        oldPassword: '',
+        newPassword: '',
+      });
+    }
+  }, [profile, reset]);
+
   const onSubmit = (data: ProfileFormData) => {
-    console.log("Profile Updated", data);
-    // Handle the profile update logic here (API call to backend)
-    // After success, update the state with new profile data
-    setProfileData(data);
+    const newData = {
+      name: data.name,
+      email: data.email,
+      newPassword: data.newPassword,
+      oldPassword: data.oldPassword,
+      id: profile?.user.id
+    };
+    console.log("Profile Updated", newData);
+    dispatch(updateProfile(newData)); 
   };
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Profile</h1>
 
-      {/* Display Profile Data */}
       <div className="mb-6">
-        <div>
-          <strong>Name:</strong> {profileData.name}
-        </div>
-        <div>
-          <strong>Email:</strong> {profileData.email}
-        </div>
+        <div><strong>Name:</strong> {profile?.user.name}</div>
+        <div><strong>Email:</strong> {profile?.user.email}</div>
       </div>
 
-      {/* Edit Profile Modal */}
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline">Edit Profile</Button>
@@ -86,60 +105,28 @@ const ProfilePage = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-4 py-4">
-              {/* Name Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  {...register("name")}
-                  className="col-span-3"
-                  defaultValue={profileData.name}
-                />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                <Label htmlFor="name" className="text-right">Name</Label>
+                <Input id="name" {...register("name")} className="col-span-3" />
+                {errors.name && <p className="text-red-500 col-span-4">{errors.name.message}</p>}
               </div>
 
-              {/* Email Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  {...register("email")}
-                  className="col-span-3"
-                  defaultValue={profileData.email}
-                />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                <Label htmlFor="email" className="text-right">Email</Label>
+                <Input id="email" {...register("email")} className="col-span-3" />
+                {errors.email && <p className="text-red-500 col-span-4">{errors.email.message}</p>}
               </div>
 
-              {/* Old Password Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="oldPassword" className="text-right">
-                  Old Password
-                </Label>
-                <Input
-                  type="password"
-                  id="oldPassword"
-                  {...register("oldPassword")}
-                  className="col-span-3"
-                />
-                {errors.oldPassword && <p className="text-red-500 text-sm">{errors.oldPassword.message}</p>}
+                <Label htmlFor="oldPassword" className="text-left">Old Password</Label>
+                <Input type="password" id="oldPassword" {...register("oldPassword")} className="col-span-3" />
+                {errors.oldPassword && <p className="text-red-500 col-span-4">{errors.oldPassword.message}</p>}
               </div>
 
-              {/* New Password Field */}
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="newPassword" className="text-right">
-                  New Password
-                </Label>
-                <Input
-                  type="password"
-                  id="newPassword"
-                  {...register("newPassword")}
-                  className="col-span-3"
-                />
-                {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword.message}</p>}
+                <Label htmlFor="newPassword" className="text-left">New Password</Label>
+                <Input type="password" id="newPassword" {...register("newPassword")} className="col-span-3" />
+                {errors.newPassword && <p className="text-red-500 col-span-4">{errors.newPassword.message}</p>}
               </div>
             </div>
 

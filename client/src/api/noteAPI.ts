@@ -5,8 +5,12 @@ export const getNotesAPI = async () =>{
     return response.data;
 };
 
-export const createNoteAPI = async (note: string) => {
-    const response = await api.post('/notes/create', { note });
+export const createNoteAPI = async (note: { title: string; description: string; password?: string }) => {
+    const response = await api.post('/notes/create', { 
+        title: note.title,
+        description: note.description,
+        password: note.password
+     });
     return response.data;
 };
 
@@ -15,12 +19,8 @@ export const deleteNoteAPI = async (id: string) => {
     return response.data;
 };
 
-export const updateNoteAPI = async (id: string, data:{
-    title: string;
-    description: string;
-    password?: string;
-}) => {
-    const response = await api.put(`/notes/${id}`, { 
+export const updateNoteAPI = async (data: { id: string; title: string; description: string; password?: string }) => {
+    const response = await api.put(`/notes/${data.id}`, { 
         title: data.title,
         description: data.description,
         password: data.password

@@ -44,34 +44,34 @@ const noteSlice = createSlice({
             })
             .addCase(createNote.fulfilled, (state, action: PayloadAction<Note>) => {
                 state.loading = false;
-                state.notes.push(action.payload);
+                console.log(action.payload);
+               state.notes.notes.push(action.payload.note); 
             })
             .addCase(createNote.rejected, (state, action: PayloadAction<any>) => {
                 state.loading = false;
                 state.error = action.payload;
             })
-            .addCase(deleteNote.fulfilled, (state, action: PayloadAction<string>) => {
-                state.loading = false;
-                console.log('STATE NOTES BEFORE DELETE:', state.notes);
-                // Delete the note by its id
-                state.notes = state.notes.filter((note) => note.id !== action.payload);
-                console.log('STATE NOTES AFTER DELETE:', state.notes);
-            })
-            .addCase(updateNote.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(updateNote.fulfilled, (state, action: PayloadAction<Note>) => {
-                state.loading = false;
-                state.notes = state.notes.map((note) =>
-                    note.id === action.payload.id ? action.payload : note
-                );
-            })
-            .addCase(updateNote.rejected, (state, action: PayloadAction<any>) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
-    },
+        .addCase(deleteNote.fulfilled, (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.notes.notes = state.notes.notes.filter((note) => note.id !== action.payload.id);
+
+        })
+        .addCase(updateNote.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(updateNote.fulfilled, (state, action: PayloadAction<Note>) => {
+            state.loading = false;
+            console.log(action.payload);
+            state.notes.notes = state.notes.notes.map((note) =>
+                note.id === action.payload.note.id ? action.payload.note : note
+            );
+        })
+        .addCase(updateNote.rejected, (state, action: PayloadAction<any>) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
+},
 });
 
 export default noteSlice.reducer;

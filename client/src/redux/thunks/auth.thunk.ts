@@ -1,4 +1,4 @@
-import { loginUserAPI, registerUserAPI } from "@/api/authAPI";
+import { getProfileUser, loginUserAPI, registerUserAPI, updateProfileAPI } from "@/api/authAPI";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 
@@ -25,3 +25,30 @@ export const loginUser = createAsyncThunk(
       }
     }
   );
+
+export const getProfile = createAsyncThunk(
+    'auth/profile',
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await getProfileUser();
+        console.log("Data", response)
+        return response;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Login failed');
+      }
+    }
+  );
+
+export const updateProfile = createAsyncThunk(
+    'auth/update_profile',
+    async (credentials: {id: string; name: string; email: string; newPassword: string;
+      oldPassword: string}, { rejectWithValue }) => {
+      try {
+        const response = await updateProfileAPI(credentials);
+        console.log("Data", response)
+        return response;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Login failed');
+      }
+    }
+)

@@ -6,7 +6,7 @@ export const getNotes = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await getNotesAPI();
-            console.log("Data", response)
+          
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch notes');
@@ -55,7 +55,7 @@ export const getNoteHistory = createAsyncThunk(
     async (id: string, { rejectWithValue }) => {
         try {
             const response = await getNoteHistoryAPI(id);
-            console.log("Data", response)
+           
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch notes');
@@ -68,7 +68,7 @@ export const convertHistory = createAsyncThunk(
     async ({id, versionId}: {id: string, versionId: string}, { rejectWithValue }) => {
         try {
             const response = await convertNoteHistoryAPI(id, versionId);
-            console.log("Data", response)
+
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch notes');

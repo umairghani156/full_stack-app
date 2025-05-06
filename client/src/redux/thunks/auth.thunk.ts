@@ -18,7 +18,7 @@ export const loginUser = createAsyncThunk(
     async (credentials: { email: string; password: string }, { rejectWithValue }) => {
       try {
         const response = await loginUserAPI(credentials);
-        console.log("Data", response)
+        
         return response;
       } catch (error: any) {
         return rejectWithValue(error.response?.data?.message || 'Login failed');
@@ -31,7 +31,7 @@ export const getProfile = createAsyncThunk(
     async (_, { rejectWithValue }) => {
       try {
         const response = await getProfileUser();
-        console.log("Data", response)
+       
         return response;
       } catch (error: any) {
         return rejectWithValue(error.response?.data?.message || 'Login failed');
@@ -45,7 +45,7 @@ export const updateProfile = createAsyncThunk(
       oldPassword: string}, { rejectWithValue }) => {
       try {
         const response = await updateProfileAPI(credentials);
-        console.log("Data", response)
+        
         return response;
       } catch (error: any) {
         return rejectWithValue(error.response?.data?.message || 'Login failed');

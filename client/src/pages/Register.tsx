@@ -1,7 +1,7 @@
 import { useAppDispatch } from '@/hooks';
 import { registerUser } from '@/redux/thunks/auth.thunk';
 import React, { useState, FormEvent, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 // Define validation schema with Zod
@@ -40,6 +40,7 @@ const Register: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -48,7 +49,7 @@ const Register: React.FC = () => {
       [name]: value
     }));
     
-    // Clear specific field error when user starts typing again
+   
     if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({
         ...prev,
@@ -64,8 +65,11 @@ const Register: React.FC = () => {
     try {
       
       const validData = registerSchema.parse(formData);
-      console.log('Form validated successfully:', validData);
-      dispatch(registerUser(validData));
+     
+      const result = await dispatch(registerUser(validData));
+      if(result.payload.success === true){
+        navigate('/login');
+      }
       
       
     } catch (error) {

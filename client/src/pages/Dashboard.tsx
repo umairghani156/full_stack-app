@@ -55,7 +55,7 @@ const [ selectedNoteId, setSelectedNoteId] = React.useState("");
       title,
       description,
     };
-    console.log(newNote);
+
     dispatch(createNote(newNote));
 
 

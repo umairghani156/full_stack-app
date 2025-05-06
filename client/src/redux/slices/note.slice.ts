@@ -57,7 +57,7 @@ const noteSlice = createSlice({
       })
       .addCase(createNote.fulfilled, (state, action: PayloadAction<Note>) => {
         state.loading = false;
-        state.notes.push(action.payload);
+        state.notes.notes.push(action.payload.note);
       })
       .addCase(createNote.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
@@ -66,7 +66,7 @@ const noteSlice = createSlice({
 
       .addCase(deleteNote.fulfilled, (state, action: PayloadAction<string>) => {
         state.loading = false;
-        state.notes = state.notes.filter((note) => note.id !== action.payload);
+        state.notes.notes = state.notes.notes.filter((note) => note.id !== action.payload.id);
       })
 
       .addCase(updateNote.pending, (state) => {
@@ -75,8 +75,8 @@ const noteSlice = createSlice({
       })
       .addCase(updateNote.fulfilled, (state, action: PayloadAction<Note>) => {
         state.loading = false;
-        state.notes = state.notes.map((note) =>
-          note.id === action.payload.id ? action.payload : note
+        state.notes.notes = state.notes.notes.map((note) =>
+          note.id === action.payload.note.id ? action.payload.note : note
         );
       })
       .addCase(updateNote.rejected, (state, action: PayloadAction<any>) => {

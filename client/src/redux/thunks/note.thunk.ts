@@ -1,4 +1,4 @@
-import { createNoteAPI, deleteNoteAPI, getNotesAPI, updateNoteAPI } from "@/api/noteAPI";
+import { convertNoteHistoryAPI, createNoteAPI, deleteNoteAPI, getNoteHistoryAPI, getNotesAPI, updateNoteAPI } from "@/api/noteAPI";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getNotes = createAsyncThunk(
@@ -49,3 +49,29 @@ export const updateNote = createAsyncThunk(
         }
     }
 );
+
+export const getNoteHistory = createAsyncThunk(
+    'notes/get_history',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const response = await getNoteHistoryAPI(id);
+            console.log("Data", response)
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch notes');
+        }
+    }
+);
+
+export const convertHistory = createAsyncThunk(
+    'notes/convert_history',
+    async ({id, versionId}: {id: string, versionId: string}, { rejectWithValue }) => {
+        try {
+            const response = await convertNoteHistoryAPI(id, versionId);
+            console.log("Data", response)
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch notes');
+        }
+    }
+)

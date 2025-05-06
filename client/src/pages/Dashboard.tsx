@@ -24,6 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EditNoteModel from "@/components/EditNote";
+import NoteSocketListener from "@/components/NoteSocketListener";
+import NoteHistoryModal from "@/components/NoteHistoryModal";
+
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -35,6 +38,8 @@ const Dashboard = () => {
     title: "",
     description: "",
   });
+const [ selectedNoteId, setSelectedNoteId] = React.useState("");
+  const [ showHistoryModal, setShowHistoryModal] = React.useState(false);
 
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -53,6 +58,7 @@ const Dashboard = () => {
     console.log(newNote);
     dispatch(createNote(newNote));
 
+
     setTitle("");
     setDescription("");
     setOpen(false);
@@ -64,6 +70,7 @@ const Dashboard = () => {
 
   return (
     <>
+      <NoteSocketListener />
       <div>
         <div className="flex justify-end mb-4">
           <button
@@ -77,27 +84,51 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {notes.notes?.map((note) => (
             <div key={note.id + note.title} className="col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">{note.title}</CardTitle>
-                  <CardDescription>{note.description}</CardDescription>
+              <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl font-semibold text-gray-800 truncate">{note.title}</CardTitle>
+                  <CardDescription className="text-sm text-gray-600">{note.description}</CardDescription>
                 </CardHeader>
-                <CardContent />
-                <div className="flex justify-end gap-2 px-6 pb-4">
-                  <Button
-                    className="bg-transparent shadow-none hover:bg-red-200 cursor-pointer text-white"
-                    onClick={() => deleteNoteHandler(note.id)}
-                  >
-                    <MdDeleteOutline className="w-6 h-6 text-red-600" />
-                  </Button>
-                  <Button onClick={() => {
-                    setShowEditModal(true);
-                    setEditNoteData(note);
-                  }} className="bg-transparent hover:bg-blue-200 cursor-pointer shadow-none text-white">
-                    <CiEdit size={30} className="text-blue-600" />
-                  </Button>
-                </div>
+
+                <CardContent className="pt-0">
+                  <div className="mt-4 flex justify-between items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedNoteId(note.id);
+                        setShowHistoryModal(true);
+                      }}
+                      className="text-blue-600 cursor-pointer border-blue-500 hover:bg-blue-50 transition-colors"
+                    >
+                      🕓 View History
+                    </Button>
+
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteNoteHandler(note.id)}
+                        className="hover:bg-red-100 cursor-pointer"
+                      >
+                        <MdDeleteOutline className="w-5 h-5 text-red-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setShowEditModal(true);
+                          setEditNoteData(note);
+                        }}
+                        className="hover:bg-blue-100 cursor-pointer"
+                      >
+                        <CiEdit size={22} className="text-blue-600" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
+
             </div>
           ))}
         </div>
@@ -146,6 +177,16 @@ const Dashboard = () => {
           setShowEditModal={setShowEditModal}
           editNoteData={editNoteData}
         />
+      }
+
+      {
+        showHistoryModal &&
+       <NoteHistoryModal
+         showHistoryModal={showHistoryModal}
+         setShowHistoryModal={setShowHistoryModal}
+         selectedNoteId={selectedNoteId}
+         setSelectedNoteId={setSelectedNoteId}
+       />
       }
 
     </>

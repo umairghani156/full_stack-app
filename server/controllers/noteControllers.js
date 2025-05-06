@@ -2,36 +2,48 @@ import prisma from "../DB/db.config.js";
 
 export const createNote = async (req, res) => {
     const { title, description, password } = req.body;
+  
     try {
-
-        const note = await prisma.note.create({
-            data: {
-                title,
-                description,
-                password: password || null,
-                ownerId: req.user.result.id
-            }
+      const note = await prisma.note.create({
+        data: {
+          title,
+          description,
+          password: password || null,
+          ownerId: req.user.result.id
+        }
+      });
+  
+      if (!note) {
+        return res.status(400).json({
+          success: false,
+          message: "Note could not be created"
         });
-        if (!note) {
-            return res.status(400).json({
-                success: false,
-                message: "Note could not be created"
-            });
-        };
-        return res.status(200).json({
-            success: true,
-            message: "Note created successfully",
-            note
-        });
+      };
 
+      console.log("Emitting note_created event:", note);
+  
+   
+      const io = req.app.get("io");
+      io.emit("note_created", {
+        userId: req.user.result.id,
+        note
+      });
+  
+      return res.status(200).json({
+        success: true,
+        message: "Note created successfully",
+        note
+      });
+  
     } catch (error) {
-        console.log("Error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        })
+      console.log("Error", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
     }
-};
+  };
+  
 export const getAllNotes = async (req, res) => {
     try {
         const notes = await prisma.note.findMany({
@@ -49,6 +61,8 @@ export const getAllNotes = async (req, res) => {
                 message: "Notes not found"
             });
         };
+
+        
         return res.status(200).json({
             success: true,
             message: "Notes fetched successfully",
@@ -85,12 +99,14 @@ export const updateNote = async (req, res) => {
             });
         };
 
+
         if (note.ownerId !== req.user.result.id) {
             return res.status(400).json({
                 success: false,
                 message: "You are not authorized to update this note"
             });
         };
+       
 
         const noteVersion = await prisma.noteVersion.create({
             data: {
@@ -121,6 +137,11 @@ export const updateNote = async (req, res) => {
                 message: "Note could not be updated"
             });
         };
+        const io = req.app.get("io");
+        io.emit("note_updated", {
+            userId: req.user.result.id,
+            note: updatedNote
+        });
         return res.status(200).json({
             success: true,
             message: "Note updated successfully",
@@ -169,6 +190,12 @@ export const deleteNote = async (req, res) => {
                 id,
             }
         })
+
+        const io = req.app.get("io");
+        io.emit("note_deleted", {
+            userId: req.user.result.id,
+            id: id
+        });
 
         return res.status(200).json({
             success: true,

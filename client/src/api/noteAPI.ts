@@ -26,5 +26,15 @@ export const updateNoteAPI = async (data: { id: string; title: string; descripti
         password: data.password
      });
     return response.data;
-}
+};
+
+export const getNoteHistoryAPI = async (id: string) => {
+    const response = await api.get(`/note-versions/get-all/${id}`);
+    return response.data;
+};
+
+export const convertNoteHistoryAPI = async (id: string, versionId: string) => {
+    const response = await api.put(`/note-versions/${id}/revert/${versionId}`);
+    return response.data;
+};
 

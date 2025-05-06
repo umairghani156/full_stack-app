@@ -1,5 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { getProfile, loginUser, registerUser, updateProfile } from '../thunks/auth.thunk';
 
 interface User {

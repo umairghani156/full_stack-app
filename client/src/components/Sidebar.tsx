@@ -35,9 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapse, isCollapsed, isMobileOpen
 
   const menuItems: MenuItem[] = [
     { path: "/dashboard", icon: <FaStickyNote />, label: "My Notes" },
-    { path: "/history", icon: <FaHistory />, label: "Version History" },
     { path: "/profile", icon: <FaUser />, label: "Profile" },
-    { path: "/logout", icon: <FaSignOutAlt />, label: "Logout" },
+    
   ];
 
   return (

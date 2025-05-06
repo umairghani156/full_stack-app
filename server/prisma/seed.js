@@ -1,8 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+
 import bcrypt from 'bcryptjs';
 import { faker } from '@faker-js/faker';
+import prisma from '../DB/db.config.js';
 
-const prisma = new PrismaClient();
+
 
 async function main() {
   const password = await bcrypt.hash('12345678', 10);

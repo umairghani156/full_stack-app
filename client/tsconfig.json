@@ -9,8 +9,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "strict": false,
-    "noImplicitAny": false,
-    "verbatimModuleSyntax": false
+    "noEmitOnError": false,
+    "skipLibCheck": true
   }
 }

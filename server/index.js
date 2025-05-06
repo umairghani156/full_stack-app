@@ -44,6 +44,8 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/notes", noteRouter);
 app.use("/api/v1/note-versions", noteVersionRouter);
 
+//Listen to port
+
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
